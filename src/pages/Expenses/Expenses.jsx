@@ -97,9 +97,9 @@ const Expenses = () => {
               boxShadow: 24,
               p: 4,
             }}>
-              {/* <Typography id="transition-modal-title" variant="h6" component="h2">
+              <Typography id="transition-modal-title" variant="h4" component="h1" color={theme.palette.secondary.light} marginBottom="1rem">
                 NEW EXPENSE
-              </Typography> */}
+              </Typography>
               <form onSubmit={handelSubmit}>
                 <Box
                   sx={{
@@ -110,9 +110,9 @@ const Expenses = () => {
                   autoComplete="off"
                 >
                   <Box sx={{ display:"flex", width:700, justifyContent:"space-between", flexWrap:"wrap", gap: "1rem"}}>
-                  <TextField required type="text" id="outlined-basic" label="Expense" variant="outlined" />
-                  <TextField required type="number" id="outlined-basic" label="Amount" variant="outlined" />
-                  <TextField required type="text" id="outlined-multiline-static" label="Description" variant="outlined" sx={{width:"50rem"}} multiline rows={4}/>
+                  <TextField required type="text" id="outlined-basic" label="Expense" variant="outlined" color='secondary' />
+                  <TextField required type="number" id="outlined-basic" label="Amount" variant="outlined" color='secondary' />
+                  <TextField required type="text" id="outlined-multiline-static" label="Description" variant="outlined" sx={{width:"50rem"}} multiline rows={4} color='secondary'/>
                   <Button
                     sx={{
                       backgroundColor: theme.palette.secondary.light,
@@ -120,6 +120,10 @@ const Expenses = () => {
                       fontSize: "14px",
                       fontWeight: "bold",
                       padding: "10px 20px",
+                      '&:hover': {
+                        border: `1px solid ${theme.palette.secondary.light}`,
+                        color: theme.palette.secondary.light,
+                      }
                     }}
                     onClick={handelSubmit}
                   >
@@ -141,6 +145,10 @@ const Expenses = () => {
                     fontSize: "14px",
                     fontWeight: "bold",
                     padding: "10px 20px",
+                    '&:hover': {
+                      border: `1px solid ${theme.palette.secondary.light}`,
+                      color: theme.palette.secondary.light,
+                    }
                   }}
                   onClick={handleOpen}
                 >

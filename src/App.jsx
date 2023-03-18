@@ -22,6 +22,7 @@ import Expenses from "./pages/Expenses/Expenses";
 import TodoList from "./pages/Todo List/TodoList";
 import { AuthProvider } from "./Context APIs/AuthContext";
 import BusinessArea from "./pages/Business Area/BusinessArea";
+import SelectBusiness from "./pages/Business Area/SelectBusiness";
 
 function App() {
   const mode = useSelector((state) => state.global.mode)
@@ -36,6 +37,7 @@ function App() {
               <Route path="/business_area" element={<BusinessArea/>}/>
                 <Route path="/signin" element={<Signin/>}/>
                 <Route path="/signup" element={<SignUp/>}/>
+                <Route path="/select_business" element={<SelectBusiness/>}/>
                   <Route element={<Layout/>}>
                     <Route path="/" element={<Navigate to="/dashboard" replace/>}/>
                     <Route path="/dashboard" element={<Dashboard/>}/>

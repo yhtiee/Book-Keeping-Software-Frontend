@@ -9,7 +9,7 @@ const BusinessArea = () => {
 
     const [selectedType, setSelectedType] = useState("S.M.E")
     const {businessDetails} = useContext(AuthContext)
-    const {userRegister} = useContext(AuthContext)
+    const {user} = useContext(AuthContext)
 
 
     const business_name = useRef()
@@ -21,7 +21,7 @@ const BusinessArea = () => {
     const submitForm = (e) => {
         e.preventDefault()
         let Business_name = business_name.current.value
-        businessDetails(userRegister, Business_name, selectedType)
+        businessDetails(user.username, Business_name, selectedType)
     }
 
   return (

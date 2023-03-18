@@ -3,7 +3,7 @@ import "./signup.css"
 import HERO from "../../Assets/Hero.png"
 import AuthContext from '../../Context APIs/AuthContext'
 import { useRef } from 'react'
-import { useNavigate } from 'react-router-dom'
+
 
 
 const SignUp = () => {

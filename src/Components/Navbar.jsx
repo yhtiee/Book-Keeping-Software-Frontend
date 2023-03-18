@@ -1,4 +1,4 @@
-import React, {useState} from 'react'
+import React, {useContext, useState} from 'react'
 import {LightModeOutlined, DarkModeOutlined, Menu as MenuIcon, Search, SettingsOutlined, ArrowDropDownOutlined} from "@mui/icons-material"
 import FlexBetween from './FlexBetween'
 import { useDispatch } from 'react-redux'
@@ -14,6 +14,7 @@ import {
     Menu,
     MenuItem, 
     useTheme } from '@mui/material'
+import AuthContext from '../Context APIs/AuthContext';
 
 const Navbar = ({isSidebarOpen, setIsSidebarOpen}) => {
     const dispatch = useDispatch()
@@ -23,6 +24,10 @@ const Navbar = ({isSidebarOpen, setIsSidebarOpen}) => {
     const handleClick = (event) => setAnchorEl(event.currentTarget);
     const handleClose = () => setAnchorEl(null);
 
+    let {user} = useContext(AuthContext)
+    let biz = JSON.parse(localStorage.getItem("businessName"))
+    let {logoutUser} = useContext(AuthContext)
+    
   return (
     <AppBar 
     sx={{
@@ -89,13 +94,13 @@ const Navbar = ({isSidebarOpen, setIsSidebarOpen}) => {
                     fontSize="0.85rem"
                     sx={{ color: theme.palette.secondary[100] }}
                     >
-                    Sharon
+                    {user.username}
                     </Typography>
                     <Typography
                     fontSize="0.75rem"
                     sx={{ color: theme.palette.secondary[200] }}
                     >
-                    Sharon Fashion Hub
+                    {biz}
                     </Typography>
                 </Box>
                 <ArrowDropDownOutlined
@@ -108,7 +113,7 @@ const Navbar = ({isSidebarOpen, setIsSidebarOpen}) => {
                 onClose={handleClose}
                 anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
                 >
-                <MenuItem onClick={handleClose}>Log Out</MenuItem>
+                <MenuItem onClick={logoutUser}>Log Out</MenuItem>
                 </Menu>
             </FlexBetween>
             </FlexBetween>

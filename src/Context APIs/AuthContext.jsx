@@ -13,10 +13,12 @@ export const AuthProvider = ({children}) => {
 
     let [authToken, setAuthToken] = useState(() => localStorage.getItem("authTokens")? JSON.parse(localStorage.getItem("authTokens")): null)
     let [user, setUser] = useState(() => localStorage.getItem("authTokens")? jwt_decode(localStorage.getItem("authTokens")): null)
+    let [business, setBusiness] = useState(() => localStorage.getItem("businessName")? localStorage.getItem("businessName"): null)
     let [loading, setLoading] = useState(true)
     let [error, setError] = useState(null)
     let navigate = useNavigate()
     let [userRegister , setRegisterUser] = useState(null)
+    let [businessList, setBusinessList] = useState([])
 
 
     async function signUpUser(Password, Email, Username){
@@ -30,9 +32,9 @@ export const AuthProvider = ({children}) => {
         })
         if (response.ok){
             if (response.status === 201){
-                navigate("/business_area")
+                navigate("/signin")
                 console.log(response)
-                setRegisterUser(Username)
+                setRegisterUser(Username)                
             }
         }
         else{
@@ -40,20 +42,52 @@ export const AuthProvider = ({children}) => {
         }  
     }
 
-    async function businessDetails(userRegister, Business_name, selectedType){
+    async function businessDetails(user, Business_name, selectedType){
         console.log("form submitted")
+        let token = JSON.parse(localStorage.getItem("authTokens"))
+        let access = token.access
+        console.log(token)
         let response = await fetch (`${API_URL}business/create_business/`, {  
             method: "POST",
             headers: {
+                'Authorization': `Bearer ${access}`,
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({"business_name":Business_name, "business_type":selectedType, "username":userRegister})
+            body: JSON.stringify({"business_name":Business_name, "business_type":selectedType, "username":user})
         })
         if (response.ok){
             if (response.status === 200){
-                navigate("/signin")
+                navigate("/")
                 console.log("success")
                 console.log(response)
+                setBusiness(localStorage.setItem("businessName", JSON.stringify(Business_name)))
+            }
+        }
+        else{
+            console.log("error")
+        }  
+    }
+
+    async function retrievebusiness(){
+        console.log("form submitted")
+        let token = JSON.parse(localStorage.getItem("authTokens"))
+        let access = token.access
+        console.log(authToken)
+        let response = await fetch (`${API_URL}business/retrieve_list_business/`, {  
+            method: "GET",
+            headers: {
+                'Authorization': `Bearer ${access}`,
+                'Content-Type': 'application/json'
+            },
+            // body: JSON.stringify({"username":user})
+        })
+        if (response.ok){
+            if (response.status === 200){
+                let data = await response.json()
+                console.log("success")
+                console.log(response)
+                console.log(data)
+                setBusinessList(localStorage.setItem("business_list", JSON.stringify(data.businesses)))
             }
         }
         else{
@@ -62,14 +96,13 @@ export const AuthProvider = ({children}) => {
     }
 
 
-    async function loginUser(e){
-        e.preventDefault()
+    async function loginUser(Password, Username, Business){
         let response = await fetch (`${API_URL}auth/token/`, {  
             method: "POST",
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({'username':e.target.username.value, 'password': e.target.password.value})
+            body: JSON.stringify({"username":Username, "password":Password})
         
         })
         if (response.ok){
@@ -78,7 +111,7 @@ export const AuthProvider = ({children}) => {
                 setAuthToken(data)
                 setUser(jwt_decode(data.access))
                 localStorage.setItem("authTokens", JSON.stringify(data))
-                navigate("/")
+                navigate("/select_business")
             }
         }
         else{
@@ -93,14 +126,15 @@ export const AuthProvider = ({children}) => {
         setAuthToken(null)
         setUser(null)
         localStorage.removeItem("authTokens")
-
+        localStorage.removeItem("businessName")
+        navigate("/signin")
     }
 
 
     // uPdate the token every 5mins sending the refresh token to the backend
     let updateToken = async () =>{
         console.log("update called")
-        let response = await fetch ("http://127.0.0.1:8000/api/token/refresh/", {  
+        let response = await fetch ("http://127.0.0.1:8000/auth/token/refresh/", {  
             method: "POST",
             headers: {
                 'Content-Type': 'application/json'
@@ -140,7 +174,10 @@ export const AuthProvider = ({children}) => {
         signUpUser : signUpUser,
         businessDetails : businessDetails,
         error : error,
-        userRegister : userRegister
+        userRegister : userRegister,
+        business : business,
+        retrievebusiness : retrievebusiness,
+        businessList : businessList
         
       }
 

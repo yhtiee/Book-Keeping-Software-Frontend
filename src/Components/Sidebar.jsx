@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import {
   Box,
   Divider,
@@ -36,6 +36,7 @@ import {
 import { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import FlexBetween from './FlexBetween';
+import ProductContext from '../Context APIs/ProductsContext';
 
 const navItems = [
   {
@@ -95,6 +96,7 @@ const Sidebar = ({
     const [active, setActive] = useState("")
     const navigate = useNavigate()
     const theme = useTheme()
+    let {retrieveListProduct} = useContext(ProductContext)
 
     useEffect(() => {
         setActive(pathname.substring(1))
@@ -149,6 +151,9 @@ const Sidebar = ({
                             onClick={() => {
                               navigate(`/${lcText}`)
                               setActive(lcText)
+                              if (text == "products"){
+                                retrieveListProduct()
+                              }
                             }}
                             sx={{
                               backgroundColor: active === lcText? theme.palette.secondary[300]:"transparent",
@@ -174,31 +179,6 @@ const Sidebar = ({
                     })}
                   </List>
               </Box>
-              {/* <Box position="absolute" bottom="1rem">
-                <Divider/>
-                <FlexBetween textTransform="none" gap="1rem" m="1.5rem 2rem 0 3rem">
-                  <Box
-                    component="img"
-                    alt="profile"
-                    src = "#"
-                    height="30px"
-                    width="40px"
-                    borderRadius="50%"
-                    sx={{objectfit: "cover"}}
-                  />
-                    <Box textAlign="left">
-                      <Typography fontWeight="bold" fontSize="0.9rem" sx={{color: theme.palette.secondary[100]}}>
-                        Sharon
-                      </Typography>
-                      <Typography fontSize="0.8rem" sx={{color: theme.palette.secondary[200]}}>
-                        Sharon Fashion Hub
-                      </Typography>
-                    </Box>
-                    <SettingsOutlined
-                      sx={{color: theme.palette.secondary[300], fontSize:"25px"}}
-                    />
-                </FlexBetween>
-              </Box> */}
             </Drawer>
         )}
     </Box>

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext, useEffect } from 'react';
 import { Box, useTheme, Button } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import Header from '../../Components/Header';
@@ -9,23 +9,44 @@ import Fade from '@mui/material/Fade';
 import Typography from '@mui/material/Typography';
 import Backdrop from '@mui/material/Backdrop';
 import TextField from '@mui/material/TextField';
+import { useRef } from "react";
+import ProductContext from '../../Context APIs/ProductsContext';
 
 const Products = () => {
     const theme = useTheme();
     const [open, setOpen] = React.useState(false);
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
+    let {createProduct} = useContext(ProductContext)
+    let {retrieveListProduct} = useContext(ProductContext)
+    let {listProducts} = useContext(ProductContext)
 
-    const handelSubmit = () => {
-      console.log("hi")
+
+    let productName = useRef()
+    let productPrice = useRef()
+    let productQuantity = useRef()
+    let productCategory = useRef()
+    
+    const handelSubmit = (e) => {
+      e.preventDefault()
+      let business = JSON.parse(localStorage.getItem("businessName"))
+      let productname = productName.current.value
+      let productprice = productPrice.current.value
+      let productquantity = productQuantity.current.value
+      let productcategory = productCategory.current.value
+      createProduct(business, productname, productprice, productquantity, productcategory)
+      handleClose()
     }
 
+
+    useEffect(() => {
+      retrieveListProduct()
+      console.log(listProducts)
+    }, [])
+    
+    console.log(listProducts)
+
     const columns = [
-      {
-        field: "id",
-        headerName: "ID",
-        flex: 0.5,
-      },
       {
         field: "product_name",
         headerName: "Product Name",
@@ -99,7 +120,7 @@ const Products = () => {
               <Typography id="transition-modal-title" variant="h4" component="h1" color={theme.palette.secondary.light} marginBottom="1rem">
                 NEW PRODUCT
               </Typography>
-              <form onSubmit={handelSubmit}>
+              <form >
                 <Box
                   sx={{
                     '& > :not(style)': {width: '100%' },
@@ -109,10 +130,10 @@ const Products = () => {
                   autoComplete="off"
                 >
                   <Box sx={{ display:"flex", width:700, justifyContent:"space-between", flexWrap:"wrap", gap: "1rem"}}>
-                  <TextField required type="text" id="outlined-basic" label="Product Name" variant="outlined" color='secondary' />
-                  <TextField required type="text" id="outlined-basic" label="Product Category" variant="outlined" color='secondary' />
-                  <TextField required type="number" id="outlined-basic" label="Quantity" variant="outlined" color='secondary' />
-                  <TextField required type="number" id="outlined-basic" label="Price" variant="outlined" color='secondary' />
+                  <TextField required type="text" id="outlined-basic" label="Product Name" variant="outlined" color='secondary' inputRef={productName} />
+                  <TextField required type="text" id="outlined-basic" label="Product Category" variant="outlined" color='secondary' inputRef={productCategory} />
+                  <TextField required type="number" id="outlined-basic" label="Quantity" variant="outlined" color='secondary' inputRef={productQuantity}/>
+                  <TextField required type="number" id="outlined-basic" label="Price" variant="outlined" color='secondary' inputRef={productPrice}/>
                   <Button
                     sx={{
                       backgroundColor: theme.palette.secondary.light,
@@ -189,8 +210,8 @@ const Products = () => {
         >
         <DataGrid
             // loading={isLoading || !data}
-            getRowId={(row) => row._id}
-            rows={[]}
+            getRowId={(row) => row.pk}
+            rows={listProducts}
             columns={columns}
             pageSize={6}
             rowsPerPageOptions={[6]}

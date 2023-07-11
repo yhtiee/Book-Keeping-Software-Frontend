@@ -9,7 +9,7 @@ import * as fcl from "@onflow/fcl"
 const SignUp = () => {
     // const {signUpUser} = useContext(AuthContext)
     // fcl.unauthenticate();
-    let {currentUser, profileExists, logOut, logIn, signUp, createProfile, userProfile} = useContext(AuthContext)
+    let {currentUser, profileExists, logOut, logIn, signUp, createProfile, userProfile, updateProfile} = useContext(AuthContext)
   
     const username = useRef()
     const email = useRef()
@@ -18,7 +18,7 @@ const SignUp = () => {
         e.preventDefault()
         let Email = email.current.value
         let Username = username.current.value
-        createProfile(Email, Username)
+        updateProfile(Email, Username)
     }
 
   return (

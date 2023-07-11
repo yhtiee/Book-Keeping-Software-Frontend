@@ -95,39 +95,29 @@ export default function AuthProvider({ children }) {
   };
 
 
-  const updateProfile = async (firstName, lastName, twitter , discord) => {
-    console.log("Updating profile", {firstName, lastName, twitter, discord});
+  const updateProfile = async (email, username) => {
+    console.log("Updating profile", {email, username});
     initTransactionState();
 
     const transactionId = await fcl.mutate({
       cadence: `
-        import NewAmbassadorProfile from 0xfad09e6732db970f
+        import User from 0x80155b3fe162462c
 
-        transaction(firstName:String, lastName:String, twitter:String, discord:String) {
+        transaction(username:String, email:String) {
           prepare(account: AuthAccount) {
             account
-              .borrow<&NewAmbassadorProfile.Base{NewAmbassadorProfile.Owner}>(from: NewAmbassadorProfile.privatePath)!
-              .setFirstName(firstName)
+              .borrow<&User.Base{User.Owner}>(from: User.privatePath)!
+              .setUsername(username)
 
             account
-              .borrow<&NewAmbassadorProfile.Base{NewAmbassadorProfile.Owner}>(from: NewAmbassadorProfile.privatePath)!
-              .setLastName(lastName)
-
-            account
-              .borrow<&NewAmbassadorProfile.Base{NewAmbassadorProfile.Owner}>(from: NewAmbassadorProfile.privatePath)!
-              .setTwitterProfileLink(twitter)
-
-            account
-              .borrow<&NewAmbassadorProfile.Base{NewAmbassadorProfile.Owner}>(from: NewAmbassadorProfile.privatePath)!
-              .setDiscordProfileLink(discord)
+              .borrow<&User.Base{User.Owner}>(from: User.privatePath)!
+              .setEmai(email)
           }
         }
       `,
       args: (arg, t) => [
-        arg(firstName, t.String),
-        arg(lastName, t.String),
-        arg(twitter, t.String),
-        arg(discord, t.String),
+        arg(username, t.String),
+        arg(email, t.String),
       ],
       payer: fcl.authz,
       proposer: fcl.authz,

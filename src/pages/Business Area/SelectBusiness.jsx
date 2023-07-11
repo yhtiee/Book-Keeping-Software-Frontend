@@ -36,7 +36,7 @@ const SelectBusiness = () => {
                 </div>
                 <Box sx={{ width: '100%', maxWidth: 360, bgcolor:"white" }}>
                     <List>
-                        {businesses.map((item, key) => (
+                        {businesses? businesses.map((item, key) => (
                             <ListItem enablePadding>
                                 <ListItemButton component="a" href="/" key={item.pk} sx={{
                                     backgroundColor: theme.palette.background.alt,
@@ -53,7 +53,7 @@ const SelectBusiness = () => {
                                     <ListItemText primary={item.business_name}/>
                                 </ListItemButton>
                             </ListItem>
-                        ))}
+                        )): ""}
                     </List>
                 </Box>
                 <h4>Create Business? <a href="/business_area">Create a New Business</a></h4>

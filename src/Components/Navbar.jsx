@@ -15,10 +15,12 @@ import {
     MenuItem, 
     useTheme } from '@mui/material'
 import AuthContext from '../Context APIs/AuthContext';
+import { Navigate, useNavigate } from 'react-router-dom';
 
 const Navbar = ({isSidebarOpen, setIsSidebarOpen}) => {
     const dispatch = useDispatch()
     const theme = useTheme()
+    let navigate = useNavigate()
     const [anchorEl, setAnchorEl] = useState(null);
     const isOpen = Boolean(anchorEl);
     const handleClick = (event) => setAnchorEl(event.currentTarget);
@@ -94,7 +96,7 @@ const Navbar = ({isSidebarOpen, setIsSidebarOpen}) => {
                     fontSize="0.85rem"
                     sx={{ color: theme.palette.secondary[100] }}
                     >
-                    {user.username}
+                    {user? user.username : navigate("/login")}
                     </Typography>
                     <Typography
                     fontSize="0.75rem"

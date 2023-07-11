@@ -20,7 +20,8 @@ import Performance from "./pages/Business Info/Performance";
 import Projections from "./pages/Projections/Projections";
 import Expenses from "./pages/Expenses/Expenses";
 import TodoList from "./pages/Todo List/TodoList";
-import { AuthProvider } from "./Context APIs/AuthContext";
+import  AuthProvider  from "./Context APIs/AuthContext";
+import  TransactionProvider  from "./Context APIs/TransactionContext";
 import BusinessArea from "./pages/Business Area/BusinessArea";
 import SelectBusiness from "./pages/Business Area/SelectBusiness";
 import { ProductProvider } from "./Context APIs/ProductsContext";
@@ -31,6 +32,7 @@ function App() {
   return (
     <div className='app'>
       <BrowserRouter>
+      <TransactionProvider>
         <ThemeProvider theme={theme}>
           <CssBaseline/>
           <AuthProvider>
@@ -54,6 +56,7 @@ function App() {
             </ProductProvider>
           </AuthProvider>
         </ThemeProvider>
+        </TransactionProvider>
       </BrowserRouter>
     </div>
   )

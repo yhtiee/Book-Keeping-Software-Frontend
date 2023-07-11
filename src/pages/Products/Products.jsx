@@ -36,6 +36,7 @@ const Products = () => {
       let productcategory = productCategory.current.value
       createProduct(business, productname, productprice, productquantity, productcategory)
       handleClose()
+      retrieveListProduct()
     }
 
 

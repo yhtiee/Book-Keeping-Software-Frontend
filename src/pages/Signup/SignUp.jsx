@@ -1,25 +1,24 @@
 import React, { useContext, useState } from 'react'
 import "./signup.css"
 import HERO from "../../Assets/Hero.png"
-import AuthContext from '../../Context APIs/AuthContext'
+import {AuthContext} from '../../Context APIs/AuthContext'
 import { useRef } from 'react'
-
-
+import "../../../flow/config"
+import * as fcl from "@onflow/fcl"
 
 const SignUp = () => {
-    const {signUpUser} = useContext(AuthContext)
+    // const {signUpUser} = useContext(AuthContext)
+    // fcl.unauthenticate();
+    let {currentUser, profileExists, logOut, logIn, signUp, createProfile, userProfile} = useContext(AuthContext)
   
-    const password = useRef()
     const username = useRef()
     const email = useRef()
 
     const submitForm = (e) => {
         e.preventDefault()
-        let Password = password.current.value
         let Email = email.current.value
-        let Username = username.current.value 
-        signUpUser(Password, Email, Username)
-
+        let Username = username.current.value
+        createProfile(Email, Username)
     }
 
   return (
@@ -27,7 +26,7 @@ const SignUp = () => {
         <div className="signup_left">
             <div className='form_wrapper'>
                 <div>
-                    <h1>Signup</h1>
+                    <h1>Create Profile</h1>
                 </div>
                 <form className='form' onSubmit={submitForm}>
                     <div>
@@ -38,14 +37,10 @@ const SignUp = () => {
                         <label>Email</label>
                         <input type="email" name="email" ref={email}/>
                     </div>
-                    <div>
-                        <label>Password:</label>
-                        <input type="password" name='password' ref={password}/>
-                    </div>
      
-                    <button>Signup</button>
+                    <button className='signup_btn'>Proceed</button>
                 </form>
-                <h4>Already have an account? <a href="/signin">Signin</a></h4>
+                <h4>Create your User Profile</h4>
             </div>
         </div>
         <div className="signup_right">

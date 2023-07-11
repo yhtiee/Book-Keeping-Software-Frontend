@@ -61,7 +61,7 @@ form > div > label {
     color: #21295C;
 }
 
-form > button {
+.signup_btn{
     width: 96%;
     padding: 10px;
     border: 1px solid lightgray;
@@ -71,8 +71,15 @@ form > button {
     color: white;
 }
 
-form > button:hover{
+.signup_btn:hover{
     cursor: pointer;
+    opacity: 0.7;
+}
+
+.btn_wrapper{
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
 }
 
 a{

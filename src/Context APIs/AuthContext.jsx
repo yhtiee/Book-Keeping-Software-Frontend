@@ -1,193 +1,161 @@
-import React, { createContext, useState, useEffect } from "react";
-import jwt_decode from "jwt-decode";
-import { useNavigate } from "react-router-dom";
-import { useRef } from "react";
-import API_URL from "./API.jsx";
+import * as fcl from "@onflow/fcl";
+import React, {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
+import { useTransaction } from "./TransactionContext";
 
 
-const AuthContext = createContext()
+export const AuthContext = createContext({});
 
-export default AuthContext
+export const useAuth = () => useContext(AuthContext);
 
-export const AuthProvider = ({children}) => {
+export default function AuthProvider({ children }) {
+  const { initTransactionState, setTxId, setTransactionStatus } =
+  useTransaction();
+  const [currentUser, setUser] = useState({ loggedIn: false, addr: undefined });
+  const [userProfile, setProfile] = useState(null);
+  const [profileExists, setProfileExists] = useState(false);
 
-    let [authToken, setAuthToken] = useState(() => localStorage.getItem("authTokens")? JSON.parse(localStorage.getItem("authTokens")): null)
-    let [user, setUser] = useState(() => localStorage.getItem("authTokens")? jwt_decode(localStorage.getItem("authTokens")): null)
-    let [business, setBusiness] = useState(() => localStorage.getItem("businessName")? localStorage.getItem("businessName"): null)
-    let [loading, setLoading] = useState(true)
-    let [error, setError] = useState(null)
-    let navigate = useNavigate()
-    let [userRegister , setRegisterUser] = useState(null)
-    let [businessList, setBusinessList] = useState([])
+  useEffect(() => fcl.currentUser.subscribe(setUser), []);
 
+  const loadProfile = useCallback(async () => {
+    const profile = await fcl.query({
+      cadence: `
+        import User from 0x80155b3fe162462c
 
-    async function signUpUser(Password, Email, Username){
-        console.log("form submitted")
-        let response = await fetch (`${API_URL}auth/signup/`, {  
-            method: "POST",
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({"username":Username, "password":Password, "email":Email})
-        })
-        if (response.ok){
-            if (response.status === 201){
-                navigate("/signin")
-                console.log(response)
-                setRegisterUser(Username)                
-            }
+        pub fun main(address: Address): User.ReadOnly? {
+          return User.read(address)
         }
-        else{
-            console.log("error")
-        }  
-    }
+      `,
+      args: (arg, t) => [arg(currentUser.addr, t.Address)],
+    });
+    setProfile(profile ?? null);
+    setProfileExists(profile !== null);
+    console.log(profile)
+    return profile;
+  }, [currentUser, setProfile, setProfileExists]);
 
-    async function businessDetails(user, Business_name, selectedType){
-        console.log("form submitted")
-        let token = JSON.parse(localStorage.getItem("authTokens"))
-        let access = token.access
-        console.log(token)
-        let response = await fetch (`${API_URL}business/create_business/`, {  
-            method: "POST",
-            headers: {
-                'Authorization': `Bearer ${access}`,
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({"business_name":Business_name, "business_type":selectedType, "username":user})
-        })
-        if (response.ok){
-            if (response.status === 200){
-                navigate("/")
-                console.log("success")
-                console.log(response)
-                setBusiness(localStorage.setItem("businessName", JSON.stringify(Business_name)))
+  useEffect(() => {
+    if (currentUser.loggedIn && userProfile === null) {
+      loadProfile();
+    }
+  }, [currentUser, userProfile, loadProfile]);
+
+  const logOut = async () => {
+    await fcl.unauthenticate();
+    setUser({ addr: undefined, loggedIn: false });
+    setProfile(null);
+    setProfileExists(false);
+  };
+
+  const logIn = () => {
+    fcl.logIn();
+  };
+
+  const signUp = () => {
+    fcl.signUp();
+  };
+
+  const createProfile = async () => {
+    initTransactionState();
+
+    const transactionId = await fcl.mutate({
+      cadence: `
+        import User from 0x80155b3fe162462c
+
+        transaction {
+          prepare(account: AuthAccount) {
+            // Only initialize the account if it hasn't already been initialized
+            if (!User.check(account.address)) {
+              // This creates and stores the profile in the user's account
+              account.save(<- User.new(), to: User.privatePath)
+
+              // This creates the public capability that lets applications read the profile's info
+              account.link<&User.Base{User.Public}>(User.publicPath, target: User.privatePath)
             }
+          }
         }
-        else{
-            console.log("error")
-        }  
-    }
-
-    async function retrievebusiness(){
-        console.log("form submitted")
-        let token = JSON.parse(localStorage.getItem("authTokens"))
-        let access = token.access
-        console.log(authToken)
-        let response = await fetch (`${API_URL}business/retrieve_list_business/`, {  
-            method: "GET",
-            headers: {
-                'Authorization': `Bearer ${access}`,
-                'Content-Type': 'application/json'
-            },
-            // body: JSON.stringify({"username":user})
-        })
-        if (response.ok){
-            if (response.status === 200){
-                let data = await response.json()
-                console.log("success")
-                console.log(response)
-                console.log(data)
-                setBusinessList(localStorage.setItem("business_list", JSON.stringify(data.businesses)))
-            }
-        }
-        else{
-            console.log("error")
-        }  
-    }
-
-
-    async function loginUser(Password, Username, Business){
-        let response = await fetch (`${API_URL}auth/token/`, {  
-            method: "POST",
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({"username":Username, "password":Password})
-        
-        })
-        if (response.ok){
-            let data = await response.json()
-            if(response.status === 200){
-                setAuthToken(data)
-                setUser(jwt_decode(data.access))
-                localStorage.setItem("authTokens", JSON.stringify(data))
-                navigate("/select_business")
-            }
-        }
-        else{
-            console.log("error")
-            setError("Invalid Username or Password")
-
-        }
-    }
-
-
-    let logoutUser = () => {
-        setAuthToken(null)
-        setUser(null)
-        localStorage.removeItem("authTokens")
-        localStorage.removeItem("businessName")
-        navigate("/signin")
-    }
-
-
-    // uPdate the token every 5mins sending the refresh token to the backend
-    let updateToken = async () =>{
-        console.log("update called")
-        let response = await fetch ("http://127.0.0.1:8000/auth/token/refresh/", {  
-            method: "POST",
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({"refresh":authToken.refresh})
-        
-        })
-        if (response.ok){
-            let data = await response.json()
-            if (response.status === 200){
-                setAuthToken(data)
-                setUser(jwt_decode(data.access))
-                localStorage.setItem("authTokens", JSON.stringify(data))
-            }else{
-                logoutUser()
-            }
-
-        }
-    }
-
-    //  used to call the update token every 2 seconds
-    useEffect(() => {
-        let fourMinutes = 1000 * 60 * 4
-        let interval = setInterval(()=>{
-            if(authToken){
-                updateToken()
-            }
-        }, fourMinutes)
-        return () => clearInterval(interval)
-       
-    }, [authToken, loading])
-    
-    let contextData = {
-        user : user,
-        loginUser: loginUser,
-        logoutUser : logoutUser,
-        signUpUser : signUpUser,
-        businessDetails : businessDetails,
-        error : error,
-        userRegister : userRegister,
-        business : business,
-        retrievebusiness : retrievebusiness,
-        businessList : businessList
-        
+      `,
+      payer: fcl.authz,
+      proposer: fcl.authz,
+      authorizations: [fcl.authz],
+      limit: 50,
+    });
+    setTxId(transactionId);
+    fcl.tx(transactionId).subscribe((res) => {
+      setTransactionStatus(res.status);
+      if (res.status === 4) {
+        loadProfile();
       }
+    });
+  };
 
-    return(
-    
-        <AuthContext.Provider value={contextData}>
-            {children}
-        </AuthContext.Provider>
-        
-        
-    )
 
+  const updateProfile = async (firstName, lastName, twitter , discord) => {
+    console.log("Updating profile", {firstName, lastName, twitter, discord});
+    initTransactionState();
+
+    const transactionId = await fcl.mutate({
+      cadence: `
+        import NewAmbassadorProfile from 0xfad09e6732db970f
+
+        transaction(firstName:String, lastName:String, twitter:String, discord:String) {
+          prepare(account: AuthAccount) {
+            account
+              .borrow<&NewAmbassadorProfile.Base{NewAmbassadorProfile.Owner}>(from: NewAmbassadorProfile.privatePath)!
+              .setFirstName(firstName)
+
+            account
+              .borrow<&NewAmbassadorProfile.Base{NewAmbassadorProfile.Owner}>(from: NewAmbassadorProfile.privatePath)!
+              .setLastName(lastName)
+
+            account
+              .borrow<&NewAmbassadorProfile.Base{NewAmbassadorProfile.Owner}>(from: NewAmbassadorProfile.privatePath)!
+              .setTwitterProfileLink(twitter)
+
+            account
+              .borrow<&NewAmbassadorProfile.Base{NewAmbassadorProfile.Owner}>(from: NewAmbassadorProfile.privatePath)!
+              .setDiscordProfileLink(discord)
+          }
+        }
+      `,
+      args: (arg, t) => [
+        arg(firstName, t.String),
+        arg(lastName, t.String),
+        arg(twitter, t.String),
+        arg(discord, t.String),
+      ],
+      payer: fcl.authz,
+      proposer: fcl.authz,
+      authorizations: [fcl.authz],
+      limit: 50,
+    });
+    setTxId(transactionId);
+    fcl.tx(transactionId).subscribe((res) => {
+      setTransactionStatus(res.status);
+      if (res.status === 4) {
+        loadProfile();
+      }
+    });
+  };
+
+  const value = {
+    currentUser,
+    userProfile,
+    profileExists,
+    logOut,
+    logIn,
+    signUp,
+    loadProfile,
+    createProfile,
+    updateProfile,
+  };
+
+  console.log("AuthProvider", value);
+
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

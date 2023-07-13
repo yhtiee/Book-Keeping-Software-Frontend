@@ -8,8 +8,8 @@ import { useRef } from 'react'
 const BusinessArea = () => {
 
     const [selectedType, setSelectedType] = useState("S.M.E")
-    const {businessDetails} = useContext(AuthContext)
-    const {user} = useContext(AuthContext)
+    // const {businessDetails} = useContext(AuthContext)
+    // const {user} = useContext(AuthContext)
 
 
     const business_name = useRef()
@@ -21,7 +21,7 @@ const BusinessArea = () => {
     const submitForm = (e) => {
         e.preventDefault()
         let Business_name = business_name.current.value
-        businessDetails(user.username, Business_name, selectedType)
+        // businessDetails(user.username, Business_name, selectedType)
     }
 
   return (
@@ -44,7 +44,7 @@ const BusinessArea = () => {
                             <option value="L.M.E">L.M.E</option>
                         </select>
                     </div>
-                    <button>Submit</button>
+                    <button className='signup_btn'>Submit</button>
                 </form>
             </div>
         </div>

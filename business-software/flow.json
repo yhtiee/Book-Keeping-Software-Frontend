@@ -14,13 +14,15 @@
 	},
 
 	"contracts": {
-		"User":  "./cadence/contracts/User.cdc"
+		"User":  "./cadence/contracts/User.cdc",
+		"Business":  "./cadence/contracts/Business.cdc"
 	},
 
 	"deployments": {
 	  "testnet": {
 		"business-account": [
-		  "User"
+		  "User",
+		  "Business"
 		]
 	  }
 	}

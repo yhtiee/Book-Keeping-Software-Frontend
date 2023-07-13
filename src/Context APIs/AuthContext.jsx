@@ -6,6 +6,7 @@ import React, {
   useEffect,
   useState,
 } from "react";
+import { useNavigate } from "react-router-dom";
 import { useTransaction } from "./TransactionContext";
 
 
@@ -21,6 +22,8 @@ export default function AuthProvider({ children }) {
   const [profileExists, setProfileExists] = useState(false);
 
   useEffect(() => fcl.currentUser.subscribe(setUser), []);
+
+  const navigate = useNavigate()
 
   const loadProfile = useCallback(async () => {
     const profile = await fcl.query({
@@ -129,6 +132,9 @@ export default function AuthProvider({ children }) {
       setTransactionStatus(res.status);
       if (res.status === 4) {
         loadProfile();
+        if (userProfile.username !== ""){
+          navigate("/business_area")
+        }
       }
     });
   };

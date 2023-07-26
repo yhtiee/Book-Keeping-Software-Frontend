@@ -9,7 +9,7 @@ import * as fcl from "@onflow/fcl"
 const SignUp = () => {
     // const {signUpUser} = useContext(AuthContext)
     // fcl.unauthenticate();
-    let {currentUser, profileExists, logOut, logIn, signUp, createProfile, userProfile, updateProfile} = useContext(AuthContext)
+    let {currentUser, storeUserProfile, profileExists, logOut, logIn, signUp, createProfile, userProfile, updateProfile} = useContext(AuthContext)
   
     const username = useRef()
     const email = useRef()
@@ -20,6 +20,8 @@ const SignUp = () => {
         let Username = username.current.value
         updateProfile(Email, Username)
     }
+
+    console.log(userProfile)
 
   return (
     <div className='signup_wrapper'>

@@ -44,20 +44,16 @@ const navItems = [
     icon: <HomeOutlined/>
   },
   {
-    text:"Performance",
-    icon: <TrendingUpOutlined/>
-  },
-  {
     text:"Business Area",
     icon: null
   },
   {
-    text:"Products",
-    icon: <ShoppingCartOutlined/>
-  },
-  {
     text:"Sales",
     icon: <PointOfSaleOutlined/>
+  },
+  {
+    text:"Products",
+    icon: <ShoppingCartOutlined/>
   },
   {
     text:"Expenses",
@@ -68,21 +64,10 @@ const navItems = [
     icon: null
   },
   {
-    text:"TodoList",
-    icon: <ListOutlined/>
+    text:"Performance",
+    icon: <TrendingUpOutlined/>
   },
-  {
-    text:"My Wallet",
-    icon: <Wallet/>
-  },
-  {
-    text:"Projections",
-    icon: <StackedLineChartOutlined/>
-  },
-  {
-    text:"Ads",
-    icon: <Speaker/>
-  },
+
 ]
 
 const Sidebar = ({
@@ -181,6 +166,7 @@ const Sidebar = ({
               </Box>
             </Drawer>
         )}
+        
     </Box>
   )
 }

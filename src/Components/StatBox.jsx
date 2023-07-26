@@ -27,6 +27,7 @@ const StatBox = ({ title, value, increase, icon, description }) => {
       <Typography
         variant="h3"
         fontWeight="600"
+        fontSize= "2rem"
         sx={{ color: theme.palette.secondary[200] }}
       >
         {value}

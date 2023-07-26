@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useContext, useState, useEffect} from "react";
 import Header from '../../Components/Header';
 import FlexBetween from '../../Components/FlexBetween';
 import {
@@ -19,16 +19,41 @@ import {
   useMediaQuery,
 } from "@mui/material";
 import StatBox from "../../Components/StatBox";
+import ProductContext from '../../Context APIs/ProductsContext';
+import "../../../flow/config"
+import * as fcl from "@onflow/fcl"
+import ExpenseContext from "../../Context APIs/ExpensesContext";
+import SalesContext from "../../Context APIs/SalesContext";
+
 
 const Dashboard = () => {
   const theme = useTheme();
   const isNonMediumScreens = useMediaQuery("(min-width: 1200px)");
+  let {totalProduct, retrieveTotalProduct} = useContext(ProductContext)
+  let {retrieveTodayExpenses, retrieveMonthExpenses, retrieveYearExpenses, expenseToday, expenseMonth, expenseYear} = useContext(ExpenseContext)
+  let { retrieveTodaySales, retrieveYearSales, retrieveMonthSales, salesToday, salesMonth, salesYear} = useContext(SalesContext)
+  const [user, setUser] = useState({loggedIn: null})
+  useEffect(() => fcl.currentUser.subscribe(setUser), [])
+
+  const today = new Date()
+
+  useEffect(() => {
+    retrieveTotalProduct(user)
+    retrieveTotalProduct(user)
+    retrieveTodayExpenses(user)
+    retrieveMonthExpenses(user)
+    retrieveYearExpenses(user)
+    retrieveYearSales(user)
+    retrieveMonthSales(user)
+    retrieveTodaySales(user)
+    console.log(totalProduct)
+  }, [user, user])
+
 
   return (
     <Box m="1.5rem 2.5rem">
       <FlexBetween>
         <Header title="DASHBOARD" subtitle="Welcome to your dashboard" />
-
         <Box>
           <Button
             sx={{
@@ -62,9 +87,8 @@ const Dashboard = () => {
         {/* ROW 1 */}
         <StatBox
           title="Total Products"
-          value={10}
-          increase="+14%"
-          description="Since last month"
+          value={`${totalProduct}`}
+          description="Currently in Stock"
           icon={
             <ShoppingCartOutlined
               sx={{ color: theme.palette.secondary[300], fontSize: "26px" }}
@@ -73,9 +97,8 @@ const Dashboard = () => {
         />
         <StatBox
           title="Sales Today"
-          value={1000}
-          increase="+21%"
-          description="Since last month"
+          value={`₦${salesToday}`}
+          description={today.toDateString()}
           icon={
             <PointOfSale
               sx={{ color: theme.palette.secondary[300], fontSize: "26px" }}
@@ -84,9 +107,8 @@ const Dashboard = () => {
         />
         <StatBox
           title="Monthly Sales"
-          value={1000}
-          increase="+5%"
-          description="Since last month"
+          value={`₦${salesMonth}`}
+          description={today.toLocaleString("default", {month:"long"})}
           icon={
             <PointOfSale
               sx={{ color: theme.palette.secondary[300], fontSize: "26px" }}
@@ -95,9 +117,8 @@ const Dashboard = () => {
         />
         <StatBox
           title="Yearly Sales"
-          value={500000}
-          increase="+43%"
-          description="Since last month"
+          value={`₦${salesYear}`}
+          description={today.getFullYear()}
           icon={
             <PointOfSale
               sx={{ color: theme.palette.secondary[300], fontSize: "26px" }}
@@ -117,9 +138,8 @@ const Dashboard = () => {
       >
         <StatBox
           title="Expenses Today"
-          value={1000}
-          increase="+21%"
-          description="Since last month"
+          value={`₦${expenseToday}`}
+          description={today.toDateString()}
           icon={
             <ReceiptLongOutlined
               sx={{ color: theme.palette.secondary[300], fontSize: "26px" }}
@@ -128,9 +148,8 @@ const Dashboard = () => {
         />
         <StatBox
           title="Monthly Expenses"
-          value={1000}
-          increase="+5%"
-          description="Since last month"
+          value={`₦${expenseMonth}`}
+          description={today.toLocaleString("default", {month:"long"})}
           icon={
             <ReceiptLongOutlined
               sx={{ color: theme.palette.secondary[300], fontSize: "26px" }}
@@ -139,9 +158,8 @@ const Dashboard = () => {
         />
         <StatBox
           title="Yearly Expenses"
-          value={500000}
-          increase="+43%"
-          description="Since last month"
+          value={`₦${expenseYear}`}
+          description={today.getFullYear()}
           icon={
             <ReceiptLongOutlined
               sx={{ color: theme.palette.secondary[300], fontSize: "26px" }}
@@ -150,9 +168,8 @@ const Dashboard = () => {
         />
         <StatBox
           title="Income Today"
-          value={1000}
-          increase="+21%"
-          description="Since last month"
+          value={`₦${salesToday - expenseToday}`}
+          description={today.toDateString()}
           icon={
             <Money
               sx={{ color: theme.palette.secondary[300], fontSize: "26px" }}
@@ -161,9 +178,8 @@ const Dashboard = () => {
         />
         <StatBox
           title="Monthly Income"
-          value={1000}
-          increase="+5%"
-          description="Since last month"
+          value={`₦${salesMonth - expenseMonth}`}
+          description={today.toLocaleString("default", {month:"long"})}
           icon={
             <Money
               sx={{ color: theme.palette.secondary[300], fontSize: "26px" }}
@@ -172,9 +188,8 @@ const Dashboard = () => {
         />
         <StatBox
           title="Yearly Income"
-          value={500000}
-          increase="+43%"
-          description="Since last month"
+          value={`₦${salesYear - expenseYear}`}
+          description={today.getFullYear()}
           icon={
             <Money
               sx={{ color: theme.palette.secondary[300], fontSize: "26px" }}

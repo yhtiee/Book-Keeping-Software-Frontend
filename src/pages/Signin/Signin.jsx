@@ -15,44 +15,35 @@ const Signin = () => {
     
   const [user, setUser] = useState({loggedIn: null})
   let {loadProfile} = useContext(AuthContext)
-  let {currentUser, profileExists, logOut, logIn, signUp, createProfile, userProfile} = useContext(AuthContext)
-
+  let {currentUser, profileExists, logOut, logIn, signUp, createProfile, userProfile, storeUserProfile} = useContext(AuthContext)
 
   let navigate = useNavigate()
 //   fcl.unauthenticate();
 
-
   useEffect(() => fcl.currentUser.subscribe(setUser), [])
 
   useEffect(() => {
-    if (user.loggedIn == true){
-      loadProfile()
-      if (user.loggedIn == true && profileExists == false){
-        createProfile()
-        navigate("/signup")
+
+    const delay = 1000; 
+
+    const timer = setTimeout(() => {
+      if (user.loggedIn == true){
+        loadProfile()
+        if (user.loggedIn == true && userProfile === null || userProfile.username == ""){
+          createProfile()
+          navigate("/signup")
+        }
+        else if (user.loggedIn == true && userProfile?.username !== ""){
+          navigate("/select_business")
+        }
       }
-      else if (user.loggedIn == true && userProfile.username !== ""){
-        navigate("/")
-      }
-    }
-  }, [user, profileExists]);
+    }, delay);
+  
+    return () => clearTimeout(timer);
+
+  }, [user, profileExists, userProfile]);
 
   console.log(user)
-
-    // let {loginUser} = useContext(AuthContext)
-    // let {retrievebusiness} = useContext(AuthContext)
-
-    // const password = useRef()
-    // const username = useRef()
-
-
-    // const submitForm = (e) => {
-    //     e.preventDefault()
-    //     let Password = password.current.value
-    //     let Username = username.current.value 
-    //     retrievebusiness()
-    //     loginUser(Password, Username)
-    // }
 
   return (
     <div className='signup_wrapper'>
@@ -61,16 +52,6 @@ const Signin = () => {
                 <div>
                     <h1>Welcome to Web3 Business App</h1>
                 </div>
-                {/* <form className='form' onSubmit={submitForm}>
-                    <div>
-                        <label>Username</label>
-                        <input type="text" ref={username} />
-                    </div>
-                    <div>
-                        <label>Password:</label>
-                        <input type="password" ref={password}/>
-                    </div>    
-                </form> */}
                 <div className='btn_wrapper'>
                 <button className='signup_btn' onClick={fcl.logIn}>Log in</button>
                 <button className='signup_btn' onClick={fcl.signUp}>Sign up</button>

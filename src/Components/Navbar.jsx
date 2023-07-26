@@ -3,6 +3,9 @@ import {LightModeOutlined, DarkModeOutlined, Menu as MenuIcon, Search, SettingsO
 import FlexBetween from './FlexBetween'
 import { useDispatch } from 'react-redux'
 import { setMode } from "../State/index.jsx";
+import "../../flow/config"
+import * as fcl from "@onflow/fcl"
+import userImage from "../Assets/user.png"
 import { 
     AppBar,
     Button,
@@ -14,8 +17,8 @@ import {
     Menu,
     MenuItem, 
     useTheme } from '@mui/material'
-import AuthContext from '../Context APIs/AuthContext';
 import { Navigate, useNavigate } from 'react-router-dom';
+import { AuthContext } from '../Context APIs/AuthContext';
 
 const Navbar = ({isSidebarOpen, setIsSidebarOpen}) => {
     const dispatch = useDispatch()
@@ -25,10 +28,12 @@ const Navbar = ({isSidebarOpen, setIsSidebarOpen}) => {
     const isOpen = Boolean(anchorEl);
     const handleClick = (event) => setAnchorEl(event.currentTarget);
     const handleClose = () => setAnchorEl(null);
+    let {currentUser, profileExists, logOut, logIn, signUp, createProfile, userProfile} = useContext(AuthContext)
 
-    let {user} = useContext(AuthContext)
+    // let {user} = useContext(AuthContext)
     let biz = JSON.parse(localStorage.getItem("businessName"))
-    let {logoutUser} = useContext(AuthContext)
+    // let {logoutUser} = useContext(AuthContext)
+
     
   return (
     <AppBar 
@@ -84,7 +89,7 @@ const Navbar = ({isSidebarOpen, setIsSidebarOpen}) => {
                 <Box
                     component="img"
                     alt="profile"
-                    src="#"
+                    src={userImage}
                     height="32px"
                     width="32px"
                     borderRadius="50%"
@@ -96,13 +101,20 @@ const Navbar = ({isSidebarOpen, setIsSidebarOpen}) => {
                     fontSize="0.85rem"
                     sx={{ color: theme.palette.secondary[100] }}
                     >
-                    {user? user.username : navigate("/login")}
+                    {/* {user? user.username : navigate("/login")} */}
+                    {userProfile?.username}
                     </Typography>
                     <Typography
                     fontSize="0.75rem"
                     sx={{ color: theme.palette.secondary[200] }}
                     >
-                    {biz}
+                    Wallet Address: {userProfile?.address}
+                    </Typography>
+                    <Typography
+                    fontSize="0.75rem"
+                    sx={{ color: theme.palette.secondary[200] }}
+                    >
+                    Business: {biz}
                     </Typography>
                 </Box>
                 <ArrowDropDownOutlined
@@ -115,7 +127,7 @@ const Navbar = ({isSidebarOpen, setIsSidebarOpen}) => {
                 onClose={handleClose}
                 anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
                 >
-                <MenuItem onClick={logoutUser}>Log Out</MenuItem>
+                <MenuItem onClick={logOut}>Log Out</MenuItem>
                 </Menu>
             </FlexBetween>
             </FlexBetween>

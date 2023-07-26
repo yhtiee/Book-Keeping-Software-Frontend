@@ -25,6 +25,9 @@ import  TransactionProvider  from "./Context APIs/TransactionContext";
 import BusinessArea from "./pages/Business Area/BusinessArea";
 import SelectBusiness from "./pages/Business Area/SelectBusiness";
 import { ProductProvider } from "./Context APIs/ProductsContext";
+import { SalesProvider } from "./Context APIs/SalesContext";
+import { ExpenseProvider } from "./Context APIs/ExpensesContext";
+
 
 function App() {
   const mode = useSelector((state) => state.global.mode)
@@ -36,6 +39,8 @@ function App() {
         <ThemeProvider theme={theme}>
           <CssBaseline/>
           <AuthProvider>
+            <ExpenseProvider>
+            <SalesProvider>
             <ProductProvider>
               <Routes>
                 <Route path="/business_area" element={<BusinessArea/>}/>
@@ -54,6 +59,8 @@ function App() {
                     </Route>
               </Routes>
             </ProductProvider>
+            </SalesProvider>
+            </ExpenseProvider>
           </AuthProvider>
         </ThemeProvider>
         </TransactionProvider>

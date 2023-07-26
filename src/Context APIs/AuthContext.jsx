@@ -8,6 +8,7 @@ import React, {
 } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTransaction } from "./TransactionContext";
+import API_URL from "./API";
 
 
 export const AuthContext = createContext({});
@@ -20,6 +21,7 @@ export default function AuthProvider({ children }) {
   const [currentUser, setUser] = useState({ loggedIn: false, addr: undefined });
   const [userProfile, setProfile] = useState(null);
   const [profileExists, setProfileExists] = useState(false);
+  const [business, setListBusiness] = useState([])
 
   useEffect(() => fcl.currentUser.subscribe(setUser), []);
 
@@ -46,6 +48,7 @@ export default function AuthProvider({ children }) {
     if (currentUser.loggedIn && userProfile === null) {
       loadProfile();
     }
+
   }, [currentUser, userProfile, loadProfile]);
 
   const logOut = async () => {
@@ -53,6 +56,8 @@ export default function AuthProvider({ children }) {
     setUser({ addr: undefined, loggedIn: false });
     setProfile(null);
     setProfileExists(false);
+    navigate("/signin")
+    localStorage.removeItem("businessName")
   };
 
   const logIn = () => {
@@ -97,9 +102,33 @@ export default function AuthProvider({ children }) {
     });
   };
 
+  async function storeUserProfile(username, email, address){
+    if(currentUser.loggedIn == true){
+      let response = await fetch( `${API_URL}auth/create-user-profile/`, {
+        method: "POST",
+        headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        "username":username,
+        "email":email,
+        "address":address
+      })
+      })
+      if(response.ok){
+        let data = await response.json()
+        if (response.status == 200){
+          navigate("/")
+        }
+      }
+    }
+  }
+
 
   const updateProfile = async (email, username) => {
     console.log("Updating profile", {email, username});
+    const address = userProfile.address
+    storeUserProfile(username, email, address)
     initTransactionState();
 
     const transactionId = await fcl.mutate({
@@ -132,12 +161,55 @@ export default function AuthProvider({ children }) {
       setTransactionStatus(res.status);
       if (res.status === 4) {
         loadProfile();
-        if (userProfile.username !== ""){
-          navigate("/business_area")
-        }
+        navigate("/dashboard")
       }
     });
   };
+
+
+
+  async function createbusiness(business, businessType){
+    if(currentUser.loggedIn == true){
+      let address = currentUser.addr
+      let response = await fetch( `${API_URL}business/create_business/`, {
+        method: "POST",
+        headers: {
+        'Content-Type': 'application/json'
+      },
+      body:JSON.stringify({
+        "address":address,
+        "business":business,
+        "businessType":businessType
+      })
+      })
+      if(response.ok){
+        let data = await response.json()
+        if (response.status == 200){
+          navigate("/")
+        }
+      }
+    }
+  }
+
+  async function retrievebusiness(user){
+      let address = user.addr
+      console.log(
+        user
+      )
+      let response = await fetch( `${API_URL}business/retrieve_list_business/${address}`, {
+        method: "GET",
+        headers: {
+        'Content-Type': 'application/json'
+      },
+      })
+      if(response.ok){
+        let data = await response.json()
+        if (response.status == 200){
+          console.log(data)
+          setListBusiness(data.businesses)
+        }
+    }
+  }
 
   const value = {
     currentUser,
@@ -149,6 +221,10 @@ export default function AuthProvider({ children }) {
     loadProfile,
     createProfile,
     updateProfile,
+    retrievebusiness,
+    createbusiness,
+    storeUserProfile,
+    business
   };
 
   console.log("AuthProvider", value);

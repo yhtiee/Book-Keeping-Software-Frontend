@@ -29,9 +29,6 @@ const Performance = () => {
       <Header title="PERFORMANCE" subtitle="Track Business Performance" />
       <Box
        mt="40px"
-        display="grid"
-        gridTemplateColumns="repeat(3, 1fr)"
-        gap="20px"
         sx={{
           "& > div": { gridColumn: isNonMediumScreens ? undefined : "span 12" },
         }}
@@ -39,55 +36,6 @@ const Performance = () => {
         <FlexBetween>
           <Example/>
         </FlexBetween>
-        <Box
-          gridColumn="span 2"
-          gridRow="span 1"
-          display="flex"
-          flexDirection="column"
-          justifyContent="space-between"
-          p="1.25rem 1rem"
-          flex="1 1 100%"
-          backgroundColor={theme.palette.background.alt}
-          borderRadius="0.55rem"
-        >
-          <Header subtitle="Popular Products"/>
-          <Box
-          height="60vh"
-          sx={{
-            "& .MuiDataGrid-root": {
-            border: "none",
-            },
-            "& .MuiDataGrid-cell": {
-            borderBottom: "none",
-            },
-            "& .MuiDataGrid-columnHeaders": {
-            backgroundColor: theme.palette.background.alt,
-            color: theme.palette.secondary[100],
-            borderBottom: "none",
-            },
-            "& .MuiDataGrid-virtualScroller": {
-            backgroundColor: theme.palette.primary.light,
-            },
-            "& .MuiDataGrid-footerContainer": {
-            backgroundColor: theme.palette.background.alt,
-            color: theme.palette.secondary[100],
-            borderTop: "none",
-            },
-            "& .MuiDataGrid-toolbarContainer .MuiButton-text": {
-            color: `${theme.palette.secondary[200]} !important`,
-            },
-        }}
-        >
-        <DataGrid
-            // loading={isLoading || !data}
-            getRowId={(row) => row._id}
-            rows={[]}
-            columns={columns}
-            pageSize={6}
-            rowsPerPageOptions={[6]}
-        />
-        </Box>
-        </Box>
       </Box>
     </Box>
   )

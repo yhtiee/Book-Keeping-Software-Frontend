@@ -95,7 +95,7 @@ const Example = () => {
       height="70vh"
     >
         <LineChart
-          width={500}
+          width={900}
           height={450}
           data={data}
           margin={{

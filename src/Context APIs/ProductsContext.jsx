@@ -10,17 +10,16 @@ export const ProductProvider = ({children}) => {
 
     let navigate = useNavigate()
     let [listProducts, setListProducts] = useState([])
+    const [totalProduct, setTotalProducts] = useState(0)
 
-    async function createProduct(business, productname, productprice, productquantity, productcategory){
-        let token = JSON.parse(localStorage.getItem("authTokens"))
-        let access = token.access
+    async function createProduct(user, business, productname, productprice, productquantity, productcategory){
+        let address = user.addr
         let response = await fetch( `${API_URL}/products/create_product/`, {
            method: "POST",
            headers: {
-            'Authorization': `Bearer ${access}`,
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify({"business_name":business, "category":productcategory, "product_name":productname, "price":productprice, "quantity":productquantity})
+        body: JSON.stringify({"address":address, "business_name":business, "category":productcategory, "product_name":productname, "price":productprice, "quantity":productquantity})
         })
         if (response.ok){
             if (response.status == 200){
@@ -33,23 +32,76 @@ export const ProductProvider = ({children}) => {
         }
     }
 
-    
-    async function retrieveListProduct(){
-        let token = JSON.parse(localStorage.getItem("authTokens"))
-        let access = token.access
-        let response = await fetch( `${API_URL}/products/retrieve_product/`, {
+
+    async function updateProduct(user, business, productname, productprice, productquantity, productcategory, pk){
+        let address = user.addr
+        let response = await fetch( `${API_URL}/products/update_product/${pk}`, {
+           method: "PUT",
+           headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({"address":address, "business_name":business, "category":productcategory, "product_name":productname, "price":productprice, "quantity":productquantity})
+        })
+        if (response.ok){
+            if (response.status == 200){
+                console.log(response)
+            }
+        }
+        else{
+            console.log("error")
+        }
+    }
+
+
+    async function retrieveListProduct(user){
+        let address = user.addr
+        let response = await fetch( `${API_URL}/products/retrieve_list_product/${address}`, {
             method: "GET",
            headers: {
-            'Authorization': `Bearer ${access}`,
             'Content-Type': 'application/json'
         },
         })
         if (response.ok){
             let data = await response.json()
             if (response.status == 200){
-                // console.log(data.products)
                 setListProducts(data.products)
-                navigate("/products")
+            }
+        }
+        else{
+            console.log("error")
+        }
+    }
+
+    async function retrieveTotalProduct(user){
+        let address = user.addr
+        let response = await fetch( `${API_URL}/products/total_product/${address}`, {
+            method: "GET",
+           headers: {
+            'Content-Type': 'application/json'
+        },
+        })
+        if (response.ok){
+            let data = await response.json()
+            if (response.status == 200){
+                setTotalProducts(data.total)
+            }
+        }
+        else{
+            console.log("error")
+        }
+    }
+
+    async function deleteProduct(pk){
+        let response = await fetch( `${API_URL}/products/delete_product/${pk}`, {
+            method: "DELETE",
+           headers: {
+            'Content-Type': 'application/json'
+        },
+        })
+        if (response.ok){
+            let data = await response.json()
+            if (response.status == 200){
+                console.log("success")
             }
         }
         else{
@@ -60,7 +112,11 @@ export const ProductProvider = ({children}) => {
     let contextData = {
         createProduct : createProduct,
         retrieveListProduct : retrieveListProduct,
-        listProducts : listProducts
+        listProducts : listProducts,
+        updateProduct : updateProduct,
+        deleteProduct : deleteProduct,
+        totalProduct : totalProduct,
+        retrieveTotalProduct : retrieveTotalProduct
     }
 
     return(

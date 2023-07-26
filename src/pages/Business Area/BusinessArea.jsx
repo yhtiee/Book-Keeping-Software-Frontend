@@ -1,16 +1,14 @@
 import React, { useContext, useState } from 'react'
 import "../Signup/signup.css"
 import HERO from "../../Assets/Hero.png"
-import AuthContext from '../../Context APIs/AuthContext'
 import { useRef } from 'react'
+import { AuthContext } from '../../Context APIs/AuthContext'
 
 
 const BusinessArea = () => {
 
     const [selectedType, setSelectedType] = useState("S.M.E")
-    // const {businessDetails} = useContext(AuthContext)
-    // const {user} = useContext(AuthContext)
-
+    let {retrievebusiness, createbusiness} = useContext(AuthContext)
 
     const business_name = useRef()
 
@@ -21,7 +19,7 @@ const BusinessArea = () => {
     const submitForm = (e) => {
         e.preventDefault()
         let Business_name = business_name.current.value
-        // businessDetails(user.username, Business_name, selectedType)
+        createbusiness(Business_name, selectedType)
     }
 
   return (
